@@ -93,6 +93,37 @@
 //! console.log(await commands.greet("Brendan"));
 //! ```
 //!
+//! ## Splitting exports across multiple files
+//!
+//! If you want to export bindings for different groups of commands to separate files,
+//! you can use [`collect_types`] instead of [`collect_commands`]. This collects only the
+//! Specta types without registering Tauri command handlers.
+//!
+//! ```rust
+//! use tauri_specta::collect_types;
+//!
+//! #[tauri::command]
+//! #[specta::specta]
+//! fn greet(name: String) -> String {
+//!     format!("Hello, {name}!")
+//! }
+//!
+//! #[tauri::command]
+//! #[specta::specta]
+//! fn hello() -> String {
+//!     "Hello!".into()
+//! }
+//!
+//! let (greet_commands, greet_types) = collect_types![greet];
+//! let (hello_commands, hello_types) = collect_types![hello];
+//! ```
+//!
+//! The returned `(commands, types)` tuple can then be passed to a language exporter
+//! (such as [`specta_typescript::Typescript`](https://docs.rs/specta-typescript/latest/specta_typescript/struct.Typescript.html))
+//! via a [`BuilderConfiguration`](crate::BuilderConfiguration).
+//!
+//! You will still need to register all commands with the Tauri builder using [`collect_commands`].
+//!
 //! ## Custom types
 //!
 //! Similar to [`serde::Serialize`] you must put the [`specta::Type`] derive macro on your own types to allow Specta to understand your types. For example:

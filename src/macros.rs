@@ -1,3 +1,68 @@
+/// Collect function types without registering Tauri commands.
+///
+/// This is equivalent to [`specta::function::collect_functions`](specta::function::collect_functions),
+/// but returns the collected functions and [`Types`](specta::Types) together.
+/// This matches the API of specta v1's [`collect_types!`](https://docs.rs/specta/1.0.5/specta/macro.collect_types.html) macro.
+///
+/// This is useful when you want to export bindings for a subset of commands to a separate file,
+/// without registering them with the Tauri builder.
+///
+/// # Usage
+/// ```rust
+/// use tauri_specta::collect_types;
+///
+/// #[tauri::command]
+/// #[specta::specta]
+/// fn hello_world(my_name: String) -> String {
+///     format!("Hello, {my_name}!")
+/// }
+///
+/// mod hello {
+///     #[tauri::command]
+///     #[specta::specta]
+///     pub fn world() -> String {
+///         format!("Hello world")
+///     }
+/// }
+///
+/// let (commands, types) = collect_types![
+///     hello_world,
+///     hello::world,
+/// ];
+/// ```
+///
+/// When integrating multiple specta-enabled libraries, you can provide a custom [`Types`](specta::Types) instance:
+///
+/// ```rust
+/// use specta::Types;
+/// use tauri_specta::collect_types;
+///
+/// #[tauri::command]
+/// #[specta::specta]
+/// fn my_command() -> String {
+///     "Hello".into()
+/// }
+///
+/// let mut types = Types::default();
+/// let (commands, types) = collect_types![types: types, my_command];
+/// ```
+///
+#[macro_export]
+macro_rules! collect_types {
+    (types: $types:ident, $($b:ident $(:: $($p:ident)? $(<$($g:path),*>)? )* ),* $(,)?) => {{
+        let mut types = $types;
+        let commands = ::specta::function::collect_functions![$($b $($(::$p)? $(::<$($g),*>)? )* ),*](&mut types);
+        (commands, types)
+    }};
+    (type_map: $types:ident, $($b:ident $(:: $($p:ident)? $(<$($g:path),*>)? )* ),* $(,)?) => {
+        $crate::collect_types!(types: $types, $($b $($(::$p)? $(::<$($g),*>)? )* ),*)
+    };
+    ($($b:ident $(:: $($p:ident)? $(<$($g:path),*>)? )* ),* $(,)?) => {{
+        let mut types = ::specta::Types::default();
+        $crate::collect_types!(types: types, $($b $($(::$p)? $(::<$($g),*>)? )* ),*)
+    }};
+}
+
 /// Collect commands and their types.
 ///
 /// This is a combination of Tauri's [`generate_handler`](tauri::generate_handler) and Specta's [`collect_functions`](specta::function),
