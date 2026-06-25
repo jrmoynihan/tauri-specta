@@ -43,6 +43,7 @@ specta-util = { workspace = true }
 
 [dev-dependencies]
 tauri = { version = "2", default-features = false, features = ["test", "wry"] }
+specta-typescript = { workspace = true }
 
 [workspace]
 members = [
