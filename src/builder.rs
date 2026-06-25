@@ -135,6 +135,20 @@ impl<R: Runtime> Clone for Builder<R> {
     }
 }
 
+impl BuilderConfiguration {
+    /// Construct export configuration from the output of [`collect_types`].
+    ///
+    /// This is useful when exporting bindings for a subset of commands without
+    /// registering them on a [`Builder`].
+    pub fn from_collected_types(commands: Vec<Function>, types: Types) -> Self {
+        Self {
+            commands,
+            types,
+            ..Default::default()
+        }
+    }
+}
+
 impl<R: Runtime> Builder<R> {
     /// Construct a new Tauri Specta builder.
     pub fn new() -> Self {

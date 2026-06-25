@@ -31,6 +31,13 @@
 /// ];
 /// ```
 ///
+/// The returned `(commands, types)` tuple can be exported with
+/// [`BuilderConfiguration::from_collected_types`] and a [`LanguageExt`] exporter.
+///
+/// Rust `///` doc comments on commands are captured by `#[specta::specta]` and
+/// preserved in exported bindings. JSDoc exports also include generated `@param`
+/// and `@returns` tags for arguments and return types.
+///
 /// When integrating multiple specta-enabled libraries, you can provide a custom [`Types`](specta::Types) instance:
 ///
 /// ```rust

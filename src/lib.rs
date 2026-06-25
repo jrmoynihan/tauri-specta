@@ -118,9 +118,14 @@
 //! let (hello_commands, hello_types) = collect_types![hello];
 //! ```
 //!
-//! The returned `(commands, types)` tuple can then be passed to a language exporter
-//! (such as [`specta_typescript::Typescript`](https://docs.rs/specta-typescript/latest/specta_typescript/struct.Typescript.html))
-//! via a [`BuilderConfiguration`](crate::BuilderConfiguration).
+//! The returned `(commands, types)` tuple can then be exported via
+//! [`BuilderConfiguration::from_collected_types`] and a language exporter
+//! (such as [`specta_typescript::Typescript`](https://docs.rs/specta-typescript/latest/specta_typescript/struct.Typescript.html)).
+//!
+//! Rust `///` doc comments on commands are captured by `#[specta::specta]` and
+//! preserved in exported bindings. When exporting to JSDoc, Tauri Specta also
+//! adds `@param` and `@returns` tags derived from the collected argument and
+//! return types.
 //!
 //! You will still need to register all commands with the Tauri builder using [`collect_commands`].
 //!
